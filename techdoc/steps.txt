@@ -1,0 +1,4 @@
+git clone --recurse-submodules --remote-submodules git@github.com:z88dk/z88dk.git
+docker build -t z88dk -f z88dk.Dockerfile .
+docker run  -v .:/src/ -it z88dk/z88dk
+zcc +z80 -clib=classic world.c -create-app -m
