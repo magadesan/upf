@@ -1,1 +1,2 @@
-mvn compile exec:java
+cd java;mvn compile exec:java
+cd c;make main;./main
