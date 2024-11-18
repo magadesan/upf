@@ -12,6 +12,7 @@ Computers of interest
 3. Gameboy
 4. TI-83
 5. Multitech MPF-1
+6. Zeal 8-bit® Computer
 
 Concepts:
 1. simulators
@@ -33,3 +34,5 @@ Resources:
 3. http://www.z80.info/
 4. Commercial IDE https://www.oshonsoft.com/z80.php
 5. Online IDE https://www.asm80.com/
+6. https://github.com/Zeal8bit/Zeal-WebEmulator
+
