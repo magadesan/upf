@@ -1,1 +1,2 @@
 Z80 Processor in Java https://github.com/codesqueak/Z80Processor
+mvn compile exec:java -Dexec.mainClass="org.example.Main"
