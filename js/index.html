@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .window {
+      position: absolute;
+      width: 300px;
+      height: 480px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      cursor: move;
+    }
+  </style>
+  <meta charset="utf-8">
+  <script src="Z80.js"></script>
+  <script src="run.js"></script>
+  <script src="parseIntelHex.js"></script>
+  <link rel="stylesheet" href="./xterm.css" />
+  <script src="./xterm.js"></script>
+</head>
+
+<body>
+  <div class="window" id="window">
+    <div class="window-header" style="background-color: #ccc; padding: 5px;">
+      <span>Drag me!</span>
+    </div>
+    <div class="window-content" style="padding: 10px;">
+      <img src="./7seg.svg" alt="7seg">
+    </div>
+  </div>
+  <div id="terminal"></div>
+  <script>
+    var term = new Terminal();
+    term.open(document.getElementById('terminal'));
+    term.write('>')
+    let currentCommand = '';
+
+    // Handle key presses
+    term.onData(function (data) {
+      if (data === '\r') {
+        // Enter key: execute command
+        executeCommand(currentCommand);
+        currentCommand = '';  // Reset command
+        term.write('\n$ ');   // Display the prompt
+      } else if (data === '\x7f') {
+        // Backspace key: remove last character
+        currentCommand = currentCommand.slice(0, -1);
+        term.write('\b \b');
+      } else {
+        // Any other key, add to current command
+        currentCommand += data;
+        term.write(data);
+      }
+    });
+
+    // Function to simulate bash commands
+    function executeCommand(command) {
+      switch (command.trim()) {
+        case 'ls':
+          term.write('\nfile1.txt  file2.txt  folder1  folder2');
+          break;
+        case 'pwd':
+          term.write('\n/home/user');
+          break;
+        case 'echo':
+          term.write('\nEcho: ' + currentCommand.slice(5).trim());
+          break;
+        default:
+          term.write(`\ncommand not found: ${command}`);
+          break;
+      }
+    }
+    const windowElement = document.getElementById('window');
+    let isDragging = false;
+    let initialX;
+    let initialY;
+
+    windowElement.addEventListener('mousedown', startDragging);
+    windowElement.addEventListener('mouseup', stopDragging);
+    windowElement.addEventListener('mousemove', drag);
+
+    function startDragging(e) {
+      isDragging = true;
+      initialX = e.clientX - windowElement.getBoundingClientRect().left;
+      initialY = e.clientY - windowElement.getBoundingClientRect().top;
+    }
+
+    function stopDragging() {
+      isDragging = false;
+    }
+
+    function drag(e) {
+      if (isDragging) {
+        const newX = e.clientX - initialX;
+        const newY = e.clientY - initialY;
+        windowElement.style.left = `${newX}px`;
+        windowElement.style.top = `${newY}px`;
+      }
+    }
+
+  </script>
+</body>
+
+</html>
