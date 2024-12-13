@@ -1,6 +1,6 @@
 const zpu = Z80({ mem_read, mem_write, io_read, io_write });
-var m_mem_mapping = new Array(65536).fill(0);
-var m_io_mapping = new Array(256).fill(0);
+var m_mem_mapping = new Uint8Array(65536).fill(255);
+var m_io_mapping = new Uint8Array(256).fill(0);
 mem_write(0, 0x10);
 mem_write(1, 0x20);
 var fileContent;

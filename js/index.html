@@ -83,6 +83,7 @@
           term.write('\nEcho: ' + currentCommand.slice(5).trim());
           break;
         case 'dump':
+          term.write('\n\r');
           let start = 0;
           let end = 100;
           if (!isNaN(Number(args[0])))
