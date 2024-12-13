@@ -101,19 +101,14 @@ function displayMemorySubset(start, end) {
     }
 
     // Iterate over the specified range of memory and print in chunks of 16 bytes
-    for (let i = start; i < end; i += 32) {
+    for (let i = start; i < end; i += 16) {
         // Print the memory address in hexadecimal
         term.write(i.toString(16).padStart(4, '0').toUpperCase() + "  ");
 
-        // Print up to 8 bytes in hexadecimal format (split into two 8-byte sections)
+        // Print up to 16 bytes in hexadecimal format
         for (let j = 0; j < 16 && i + j < end; j++) {
-            term.write(decimalToHex(m_mem_mapping[i + j])+ " ");
+            term.write(decimalToHex(m_mem_mapping[i + j]) + " ");
         }
-
-        // Fill in any remaining spaces if the last line has less than 16 bytes
-        //for (let j = end % 16; j < 16 && i + j < end; j++) {
-        //    term.write("   "); // 3 spaces for unfilled bytes
-        //}
 
         // Print the ASCII representation of the bytes
         term.write("  ");
