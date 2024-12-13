@@ -21,10 +21,11 @@
   </style>
   <meta charset="utf-8">
   <script src="Z80.js"></script>
+  <script src="register.js"></script>
   <script src="run.js"></script>
   <script src="parseIntelHex.js"></script>
-  <link rel="stylesheet" href="./xterm.css" />
   <script src="./xterm.js"></script>
+  <link rel="stylesheet" href="./xterm.css" />
 </head>
 
 <body>
@@ -40,7 +41,7 @@
   <script>
     var term = new Terminal();
     term.open(document.getElementById('terminal'));
-    term.write('>')
+    term.write("Welcome to the Interactive CLI!\n\rexit, go, dump, pc, set, read\r\n> ");
     let currentCommand = '';
 
     // Handle key presses
@@ -49,28 +50,42 @@
         // Enter key: execute command
         executeCommand(currentCommand);
         currentCommand = '';  // Reset command
-        term.write('\n$ ');   // Display the prompt
+        term.write('\n\r> ');   // Display the prompt
       } else if (data === '\x7f') {
         // Backspace key: remove last character
         currentCommand = currentCommand.slice(0, -1);
         term.write('\b \b');
       } else {
-        // Any other key, add to current command
         currentCommand += data;
         term.write(data);
       }
     });
-
-    // Function to simulate bash commands
     function executeCommand(command) {
       switch (command.trim()) {
-        case 'ls':
-          term.write('\nfile1.txt  file2.txt  folder1  folder2');
+        case 'exit':
+          term.write('\n\r Exiting...\n\r');
           break;
-        case 'pwd':
-          term.write('\n/home/user');
+        case 'go':
+          var i = 10;
+          while (zpu.isHalted() || i-- > 0) {
+            term.write("\n\rB: "+decimalToHex(zpu.getState().b));
+            term.write(" ["+decimalToHex(zpu.getPC(),2)+"]: ");
+            term.write(""+decimalToHex(m_mem_mapping[zpu.getPC()])+" "+decimalToHex(m_mem_mapping[zpu.getPC()+1])+" "+decimalToHex(m_mem_mapping[zpu.getPC()+2]));
+            zpu.run_instruction();
+          }
           break;
-        case 'echo':
+        case 'reg':
+          term.write('\n\r');
+          displayRegisters();
+          break;
+        case 'set':
+          term.write('\nEcho: ' + currentCommand.slice(5).trim());
+          break;
+        case 'dump':
+          term.write('\n\r');
+          displayMemorySubset(0, 2048)
+          break;
+        case 'pc':
           term.write('\nEcho: ' + currentCommand.slice(5).trim());
           break;
         default:
