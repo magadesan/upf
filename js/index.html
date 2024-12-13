@@ -61,16 +61,17 @@
       }
     });
     function executeCommand(command) {
-      switch (command.trim()) {
+      const [cmd, ...args] = command.trim().split(' ');
+      switch (cmd) {
         case 'exit':
           term.write('\n\r Exiting...\n\r');
           break;
         case 'go':
-          var i = 10;
+          var i = Number(args[0]);
           while (zpu.isHalted() || i-- > 0) {
-            term.write("\n\rB: "+decimalToHex(zpu.getState().b));
-            term.write(" ["+decimalToHex(zpu.getPC(),2)+"]: ");
-            term.write(""+decimalToHex(m_mem_mapping[zpu.getPC()])+" "+decimalToHex(m_mem_mapping[zpu.getPC()+1])+" "+decimalToHex(m_mem_mapping[zpu.getPC()+2]));
+            term.write("\n\rB: " + decimalToHex(zpu.getState().b));
+            term.write(" [" + decimalToHex(zpu.getPC(), 2) + "]: ");
+            term.write("" + decimalToHex(m_mem_mapping[zpu.getPC()]) + " " + decimalToHex(m_mem_mapping[zpu.getPC() + 1]) + " " + decimalToHex(m_mem_mapping[zpu.getPC() + 2]));
             zpu.run_instruction();
           }
           break;
@@ -82,8 +83,13 @@
           term.write('\nEcho: ' + currentCommand.slice(5).trim());
           break;
         case 'dump':
-          term.write('\n\r');
-          displayMemorySubset(0, 2048)
+          let start = 0;
+          let end = 100;
+          if (!isNaN(Number(args[0])))
+            start = Number(args[0]);
+          if (!isNaN(Number(args[1])))
+            end = Number(args[1]);
+          displayMemorySubset(start, end);
           break;
         case 'pc':
           term.write('\nEcho: ' + currentCommand.slice(5).trim());

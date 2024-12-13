@@ -7,24 +7,9 @@ var fileContent;
 async function logFileContent(fileUrl) {
     await fetchFileAndLog(fileUrl);
     parseIntelHex(fileContent, m_mem_mapping);
-/*    //console.log(m_mem_mapping.slice(0,5).toString(16).padStart(2, '0'));
-    let elam_count = 1000;
-    while (elam_count-- > 0) {
-        console.log("Before PC: " + zpu.getPC() + "::" + m_mem_mapping[zpu.getPC()] + "," + m_mem_mapping[zpu.getPC() + 1] + "," + m_mem_mapping[zpu.getPC() + 2] + ",");
-        zpu.run_instruction();
-        console.log("After PC: " + zpu.getPC());
-    }
-*/
 }
 const fileUrl = '../mpf-1b.hex';
 logFileContent(fileUrl);
-/*
-for (var i=0;i<32;i++) {
-    console.log(m_mem_mapping[i]& 0xf);
-    console.log(m_mem_mapping[i]& 0xf0);
-}
-console.log("I am here");
-*/
 
 function mem_read(address) {
     if ((address & 0xffff) == address)
