@@ -67,13 +67,14 @@
           term.write('\n\r Exiting...\n\r');
           break;
         case 'go':
-          var i = Number(args[0]);
-          while (zpu.isHalted() || i-- > 0) {
-            term.write("\n\rB: " + decimalToHex(zpu.getState().b));
-            term.write(" [" + decimalToHex(zpu.getPC(), 2) + "]: ");
-            term.write("" + decimalToHex(m_mem_mapping[zpu.getPC()]) + " " + decimalToHex(m_mem_mapping[zpu.getPC() + 1]) + " " + decimalToHex(m_mem_mapping[zpu.getPC() + 2]));
+          term.write('\n\r');
+          let num = 10;
+          if (!isNaN(Number(args[0])))
+            num = Number(args[0]);
+          while (zpu.isHalted() || num-- > 0) {
             zpu.run_instruction();
           }
+          displayRegisters();
           break;
         case 'reg':
           term.write('\n\r');
@@ -84,8 +85,8 @@
           break;
         case 'dump':
           term.write('\n\r');
-          let start = 0;
-          let end = 100;
+          let start = zpu.getPC();
+          let end = zpu.getPC()+100;
           if (!isNaN(Number(args[0])))
             start = Number(args[0]);
           if (!isNaN(Number(args[1])))

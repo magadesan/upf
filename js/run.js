@@ -31,21 +31,12 @@ function mem_write(address, value) {
 
 
 function io_read(address) {
-    if ((address & 0xff) == address)
-        return m_io_mapping[address];
-    else {
-        console.log("No device replied to i/o read: " + address);
-        return 0;
-    }
+    return m_io_mapping[address & 0xff];
 }
 
 function io_write(address, value) {
-    if (((address & 0xff) == address) && ((value & 0xff) == value))
-        m_mem_mapping[address] = value;
-    else {
-        console.log("No i/o device to write at: " + address + " value: " + value);
-        return 0;
-    }
+    m_io_mapping[address & 0xff] = value & 0xff;
+    term.write("\n\rPort: "+address & 0xff+":"+value & 0xff);
 }
 
 async function fetchFileAndLog(url) {
