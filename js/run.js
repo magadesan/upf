@@ -36,7 +36,7 @@ function io_read(address) {
 
 function io_write(address, value) {
     m_io_mapping[address & 0xff] = value & 0xff;
-    term.write("\n\rPort: "+address & 0xff+":"+value & 0xff);
+    console.log("Port: "+decimalToHex(address & 0xff)+":"+decimalToHex(value & 0xff));
 }
 
 async function fetchFileAndLog(url) {
