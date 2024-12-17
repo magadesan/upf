@@ -6,5 +6,5 @@
   <path fill="red" id="e" d="M31 181 7 307 20 319 45 295 64 202 31 181Z"/>
   <path fill="red" id="f" d="M55 48 31 171 73 149 89 47 72 26Z"/>
   <path fill="red" id="g" d="M73 161 44 177 74 196 193 196 220 179 191 161Z"/>
-  <circle fill="red" r="20" cx="240" cy="328"/>
+  <circle fill="red" id="dp" r="20" cx="240" cy="328"/>
 </svg>
