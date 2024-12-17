@@ -11,7 +11,7 @@
 
     .window {
       position: absolute;
-      width: 300px;
+      width: 2000px;
       height: 480px;
       background-color: #f0f0f0;
       border: 1px solid #ccc;
@@ -29,15 +29,21 @@
 </head>
 
 <body>
+  <div id="terminal"></div>
   <div class="window" id="window">
     <div class="window-header" style="background-color: #ccc; padding: 5px;">
       <span>Drag me!</span>
     </div>
     <div class="window-content" style="padding: 10px;">
-      <img src="./7seg.svg" alt="7seg">
-    </div>
+      <img height="400px" src="./7seg.svg">
+      <img height="400px" src="./7seg.svg">
+      <img height="400px" src="./7seg.svg">
+      <img height="400px" src="./7seg.svg">
+      <img height="400px" src="./7seg.svg">
+      <img height="400px" src="./7seg.svg">
   </div>
-  <div id="terminal"></div>
+  </div>
+
   <script>
     var term = new Terminal();
     term.open(document.getElementById('terminal'));
