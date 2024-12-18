@@ -31,6 +31,7 @@ function mem_write(address, value) {
 
 
 function io_read(address) {
+    console.log("Read:" + decimalToHex(address & 0xff));
     return m_io_mapping[address & 0xff];
 }
 
@@ -45,76 +46,68 @@ var seg_e = "";
 var seg_f = "";
 var seg_g = "";
 var seg_dp = "";
-var digit = "";
+var run_digit = "";
 function io_write(address, value) {
     m_io_mapping[address & 0xff] = value & 0xff;
-    //console.log("Port: " + decimalToHex(address & 0xff) + ":" + decimalToHex(value & 0xff));
-    if ((address & 0xff) == 0x02) {
-        console.log("0x02 Port: " + decimalToHex(address & 0xff) + ":" + decimalToHex(value & 0xff));
-        switch (value) {
+    if ((address & 0xff) == 0x02 && ((value & 0x3f) != 0)) {
+        switch (value & 0x3f) {
             case 0x01:
-                digit = "svg-object-data0"; break;
+                run_digit = "svg-object-data0"; break;
             case 0x02:
-                digit = "svg-object-data1"; break;
+                run_digit = "svg-object-data1"; break;
             case 0x04:
-                digit = "svg-object-add0"; break;
+                run_digit = "svg-object-add0"; break;
             case 0x08:
-                digit = "svg-object-add1"; break;
+                run_digit = "svg-object-add1"; break;
             case 0x10:
-                digit = "svg-object-add2"; break;
+                run_digit = "svg-object-add2"; break;
             case 0x20:
-                digit = "svg-object-add3";
+                run_digit = "svg-object-add3";break;
         }
     }
     if ((address & 0xff) == 0x01) {
-        //console.log("0x01 Port: " + decimalToHex(address & 0xff) + ":" + decimalToHex(value & 0xff));
         if ((value && 0x01) == 0x01)
             seg_e = "red";
         else
             seg_e = "white";
-        if ((value && 0x02) == 0x01)
+        if ((value && 0x02) == 0x02)
             seg_g = "red";
         else
             seg_g = "white";
-        if ((value && 0x04) == 0x01)
+        if ((value && 0x04) == 0x04)
             seg_f = "red";
         else
             seg_f = "white";
-        if ((value && 0x08) == 0x01)
+        if ((value && 0x08) == 0x08)
             seg_a = "red";
         else
             seg_a = "white";
-        if ((value && 0x10) == 0x01)
+        if ((value && 0x10) == 0x10)
             seg_b = "red";
         else
             seg_b = "white";
-        if ((value && 0x20) == 0x01)
+        if ((value && 0x20) == 0x20)
             seg_c = "red";
         else
             seg_c = "white";
-        if ((value && 0x40) == 0x01)
+        if ((value && 0x40) == 0x40)
             seg_dp = "red";
         else
             seg_dp = "white";
-        if ((value && 0x80) == 0x01)
+        if ((value && 0x80) == 0x80)
             seg_d = "red";
         else
             seg_d = "white";
     }
-    if (digit != "") {
-        //console.log("digit: "+digit);
-        const svgObject = document.getElementById(digit);
-        const svgDoc = svgObject.contentDocument; // Access the embedded SVG's DOM
-        const segmentA = svgDoc.getElementById('dp'); // Assuming the segment has id="segmentA"
-        segmentA.setAttribute('fill', seg_dp); // Change color to red
-        document.getElementById(digit).contentDocument.getElementById("a").setAttribute("fill", seg_a);
-        document.getElementById(digit).contentDocument.getElementById("b").setAttribute("fill", seg_b);
-        document.getElementById(digit).contentDocument.getElementById("c").setAttribute("fill", seg_c);
-        document.getElementById(digit).contentDocument.getElementById("d").setAttribute("fill", seg_d);
-        document.getElementById(digit).contentDocument.getElementById("e").setAttribute("fill", seg_e);
-        document.getElementById(digit).contentDocument.getElementById("f").setAttribute("fill", seg_f);
-        document.getElementById(digit).contentDocument.getElementById("g").setAttribute("fill", seg_g);
-        document.getElementById(digit).contentDocument.getElementById("dp").setAttribute("fill", seg_dp);
+    if (run_digit != "") {
+        document.getElementById(run_digit).contentDocument.getElementById("a").setAttribute("fill", seg_a);
+        document.getElementById(run_digit).contentDocument.getElementById("b").setAttribute("fill", seg_b);
+        document.getElementById(run_digit).contentDocument.getElementById("c").setAttribute("fill", seg_c);
+        document.getElementById(run_digit).contentDocument.getElementById("d").setAttribute("fill", seg_d);
+        document.getElementById(run_digit).contentDocument.getElementById("e").setAttribute("fill", seg_e);
+        document.getElementById(run_digit).contentDocument.getElementById("f").setAttribute("fill", seg_f);
+        document.getElementById(run_digit).contentDocument.getElementById("g").setAttribute("fill", seg_g);
+        document.getElementById(run_digit).contentDocument.getElementById("dp").setAttribute("fill", seg_dp);
     }
 }
 

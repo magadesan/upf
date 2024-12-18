@@ -11,8 +11,8 @@
 
     .window {
       position: absolute;
-      width: 2000px;
-      height: 480px;
+      width: 2150px;
+      height: 415px;
       background-color: #f0f0f0;
       border: 1px solid #ccc;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
@@ -20,12 +20,12 @@
     }
   </style>
   <meta charset="utf-8">
-  <script src="Z80.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/DrGoldfire/Z80.js@master/Z80.js"></script>
   <script src="register.js"></script>
   <script src="run.js"></script>
   <script src="parseIntelHex.js"></script>
-  <script src="./xterm.js"></script>
-  <link rel="stylesheet" href="./xterm.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
 </head>
 
 <body>
@@ -38,7 +38,7 @@
       <object type="image/svg+xml" id="svg-object-add3" data="./7seg.svg" height="400px"></object>
       <object type="image/svg+xml" id="svg-object-add2" data="./7seg.svg" height="400px"></object>
       <object type="image/svg+xml" id="svg-object-add1" data="./7seg.svg" height="400px"></object>
-      <object type="image/svg+xml" id="svg-object-add0" data="./7seg.svg" height="400px"></object>
+      <object type="image/svg+xml" id="svg-object-add0" data="./7seg.svg" height="400px" style="margin-right: 300px;"></object>
       <object type="image/svg+xml" id="svg-object-data1" data="./7seg.svg" height="400px"></object>
       <object type="image/svg+xml" id="svg-object-data0" data="./7seg.svg" height="400px"></object>
   </div>
@@ -91,12 +91,12 @@
           break;
         case 'dump':
           term.write('\n\r');
-          let start = zpu.getPC();
-          let end = zpu.getPC()+100;
-          if (!isNaN(Number(args[0])))
-            start = Number(args[0]);
-          if (!isNaN(Number(args[1])))
-            end = Number(args[1]);
+          let start = zpu.getState().pc;
+          let end = zpu.getState().pc+100;
+          if (!isNaN(Number(parseInt(args[0], 16))))
+            start = Number(parseInt(args[0], 16));
+          if (!isNaN(Number(parseInt(args[1], 16))))
+            end = Number(parseInt(args[1], 16));
           displayMemorySubset(start, end);
           break;
         case 'pc':
