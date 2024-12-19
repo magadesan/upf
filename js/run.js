@@ -4,6 +4,7 @@ var m_io_mapping = new Uint8Array(256).fill(0);
 mem_write(0, 0x10);
 mem_write(1, 0x20);
 var fileContent;
+var debug = true;
 async function logFileContent(fileUrl) {
     await fetchFileAndLog(fileUrl);
     parseIntelHex(fileContent, m_mem_mapping);
@@ -31,7 +32,7 @@ function mem_write(address, value) {
 
 
 function io_read(address) {
-    console.log("Read:" + decimalToHex(address & 0xff));
+    if(debug) console.log("Read:" + decimalToHex(address & 0xff));
     return m_io_mapping[address & 0xff];
 }
 
@@ -48,6 +49,7 @@ var seg_g = "";
 var seg_dp = "";
 var run_digit = "";
 function io_write(address, value) {
+    if(debug) console.log(toHex(address,4)+":"+decimalToHex(value));
     m_io_mapping[address & 0xff] = value & 0xff;
     if ((address & 0xff) == 0x02 && ((value & 0x3f) != 0)) {
         switch (value & 0x3f) {
@@ -64,6 +66,7 @@ function io_write(address, value) {
             case 0x20:
                 run_digit = "svg-object-add3";break;
         }
+        if(debug) console.log("value: "+decimalToHex(value & 0x3f)+" run_digit: "+run_digit);
     }
     if ((address & 0xff) == 0x01) {
         if ((value && 0x01) == 0x01)
@@ -98,8 +101,12 @@ function io_write(address, value) {
             seg_d = "red";
         else
             seg_d = "white";
+        if(debug) console.log("Seg Value: "+decimalToHex(value)+" run_digit: "+run_digit);
+        if(debug) console.log("debug colors: "+"a: "+seg_a+" b: "+seg_b+" c: "+seg_c+" d: "+seg_d+" e: "+seg_e+" f: "+seg_f+" g: "+seg_g+" dp: "+seg_dp);
     }
     if (run_digit != "") {
+        if(debug) console.log("run_digit: "+document.getElementById(run_digit));
+        if(debug) console.log("colors: "+"a: "+seg_a+" b: "+seg_b+" c: "+seg_c+" d: "+seg_d+" e: "+seg_e+" f: "+seg_f+" g: "+seg_g+" dp: "+seg_dp);
         document.getElementById(run_digit).contentDocument.getElementById("a").setAttribute("fill", seg_a);
         document.getElementById(run_digit).contentDocument.getElementById("b").setAttribute("fill", seg_b);
         document.getElementById(run_digit).contentDocument.getElementById("c").setAttribute("fill", seg_c);
