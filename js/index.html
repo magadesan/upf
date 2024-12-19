@@ -32,7 +32,7 @@
   <div id="terminal"></div>
   <div class="window" id="window">
     <div class="window-header" style="background-color: #ccc; padding: .5px;">
-      <span>Drag me!</span>
+      <span>uPf-1</span>
     </div>
     <div class="svg-container" style="padding: 0; display: flex; gap: 0;">
       <object type="image/svg+xml" id="svg-object-add3" data="https://upload.wikimedia.org/wikipedia/en/5/5d/Slanted7SegmentDisplayWithDot.svg" style="width: 30px; height: 45px;"></object>
@@ -77,7 +77,7 @@
           let num = 10;
           if (!isNaN(Number(args[0])))
             num = Number(args[0]);
-          while (zpu.isHalted() || num-- > 0) {
+          while (zpu.getState().halted || num-- > 0) {
             zpu.run_instruction();
           }
           displayRegisters();
@@ -92,7 +92,7 @@
         case 'dump':
           term.write('\n\r');
           let start = zpu.getState().pc;
-          let end = zpu.getState().pc+100;
+          let end = zpu.getState().pc+128;
           if (!isNaN(Number(parseInt(args[0], 16))))
             start = Number(parseInt(args[0], 16));
           if (!isNaN(Number(parseInt(args[1], 16))))
