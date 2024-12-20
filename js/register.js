@@ -91,7 +91,7 @@ function displayRegisters() {
 
     // Output flags in a single line
     term.write(`Flags: ${flags}\n\r`);
-    term.write(`Flags' (Prime): ${flagsPrime}\n\r`);
+    term.write(`Flags' (Prime): ${flagsPrime}`);
 }
 function displayMemorySubset(start, end) {
     // Validate start and end indexes
@@ -121,6 +121,6 @@ function displayMemorySubset(start, end) {
             }
         }
 
-        term.write("\n\r"); // Move to the next line after printing 16 bytes
+        if(i<end-16) term.write("\n\r"); // Move to the next line after printing 16 bytes
     }
 }

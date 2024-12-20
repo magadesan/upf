@@ -97,7 +97,7 @@
 
       const commands = {
         'exit': () => {
-          term.write('\n\rExiting...\n\r');
+          term.write('\n\rExiting...');
         },
         'go': () => {
           let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 10;
@@ -117,6 +117,10 @@
         'break': () => {
           let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 0;
           breakpoint = num;
+        },
+        'debug': () => {
+          debug = !debug;
+          term.write('\n\r'+debug);
         },
         'reg': () => {
           term.write('\n\r');

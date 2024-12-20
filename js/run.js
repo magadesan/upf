@@ -5,7 +5,7 @@ mem_write(0, 0x10);
 mem_write(1, 0x20);
 
 let fileContent;
-const debug = true;
+let debug = true;
 
 // Start the process of loading the file and logging the content
 const fileUrl = '../mpf-1b.hex';
