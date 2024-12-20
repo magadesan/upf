@@ -101,6 +101,7 @@
         },
         'go': () => {
           let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 10;
+          term.write('\n\r');
           while (num-- > 0 && zpu.getState().pc !== breakpoint) {
             zpu.run_instruction();
           }
@@ -108,15 +109,22 @@
         },
         'pc': () => {
           let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 10;
-          zpu.getState().pc = num;
+          term.write('\n\r');
+          let state = zpu.getState();
+          state.pc = num;
+          zpu.getState();
         },
         'break': () => {
           let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 0;
           breakpoint = num;
         },
-        'reg': () => displayRegisters(),
+        'reg': () => {
+          term.write('\n\r');
+          displayRegisters();
+        },
         'set': () => term.write('\nEcho: ' + currentCommand.slice(5).trim()),
         'dump': () => {
+          term.write('\n\r');
           let start = args.length && !isNaN(parseInt(args[0], 16)) ? parseInt(args[0], 16) : zpu.getState().pc;
           let end = args.length && !isNaN(parseInt(args[1], 16)) ? parseInt(args[1], 16) : start + 128;
           displayMemorySubset(start, end);
