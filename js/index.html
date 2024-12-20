@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Terminal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      background-color: #f4f4f4;
     }
 
     .window {
@@ -17,48 +22,67 @@
       border: 1px solid #ccc;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
       cursor: move;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .window-header {
+      background-color: #ccc;
+      padding: 0.5px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .svg-container {
+      display: flex;
+      gap: 0;
+      justify-content: space-between;
+      padding: 5px;
+    }
+
+    .svg-container object {
+      width: 30px;
+      height: 45px;
     }
   </style>
-  <meta charset="utf-8">
   <script src="https://cdn.jsdelivr.net/gh/DrGoldfire/Z80.js@master/Z80.js"></script>
   <script src="register.js"></script>
   <script src="run.js"></script>
   <script src="parseIntelHex.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
 </head>
 
 <body>
   <div id="terminal"></div>
   <div class="window" id="window">
-    <div class="window-header" style="background-color: #ccc; padding: .5px;">
+    <div class="window-header">
       <span>uPf-1</span>
     </div>
-    <div class="svg-container" style="padding: 0; display: flex; gap: 0;">
-      <object type="image/svg+xml" id="svg-object-add3" data="./7seg.svg" style="width: 30px; height: 45px;"></object>
-      <object type="image/svg+xml" id="svg-object-add2" data="./7seg.svg" style="width: 30px; height: 45px;"></object>
-      <object type="image/svg+xml" id="svg-object-add1" data="./7seg.svg" style="width: 30px; height: 45px;"></object>
-      <object type="image/svg+xml" id="svg-object-add0" data="./7seg.svg" style="width: 30px; height: 45px; margin-right: 20px;"></object>
-      <object type="image/svg+xml" id="svg-object-data1" data="./7seg.svg" style="width: 30px; height: 45px;"></object>
-      <object type="image/svg+xml" id="svg-object-data0" data="./7seg.svg" style="width: 30px; height: 45px;"></object>
-  </div>
+    <div class="svg-container">
+      <object type="image/svg+xml" id="svg-object-add3" data="./7seg.svg"></object>
+      <object type="image/svg+xml" id="svg-object-add2" data="./7seg.svg"></object>
+      <object type="image/svg+xml" id="svg-object-add1" data="./7seg.svg"></object>
+      <object type="image/svg+xml" id="svg-object-add0" data="./7seg.svg"></object>
+      <object type="image/svg+xml" id="svg-object-data1" data="./7seg.svg"></object>
+      <object type="image/svg+xml" id="svg-object-data0" data="./7seg.svg"></object>
+    </div>
   </div>
 
   <script>
-    var term = new Terminal();
+    // Initialize the terminal
+    const term = new Terminal();
     term.open(document.getElementById('terminal'));
-    term.write("Welcome to the Interactive CLI!\n\rexit, go, dump, pc, set, read\r\n> ");
+    term.write("Welcome to the Interactive CLI!\n\rexit, pc, go, dump, step/s, reg, break\r\n> ");
     let currentCommand = '';
+    let breakpoint = 0xffff;
 
-    // Handle key presses
-    term.onData(function (data) {
+    // Command Execution Handler
+    term.onData((data) => {
       if (data === '\r') {
-        // Enter key: execute command
-        executeCommand(currentCommand);
-        currentCommand = '';  // Reset command
-        term.write('\n\r> ');   // Display the prompt
+        executeCommand(currentCommand.trim());
+        currentCommand = '';
+        term.write('\n\r> ');
       } else if (data === '\x7f') {
-        // Backspace key: remove last character
         currentCommand = currentCommand.slice(0, -1);
         term.write('\b \b');
       } else {
@@ -66,51 +90,55 @@
         term.write(data);
       }
     });
+
+    // Execute Commands
     function executeCommand(command) {
-      const [cmd, ...args] = command.trim().split(' ');
-      switch (cmd) {
-        case 'exit':
-          term.write('\n\r Exiting...\n\r');
-          break;
-        case 'go':
-          term.write('\n\r');
-          let num = 10;
-          if (!isNaN(Number(args[0])))
-            num = Number(args[0]);
-          while (zpu.getState().halted || num-- > 0) {
+      const [cmd, ...args] = command.split(' ');
+
+      const commands = {
+        'exit': () => {
+          term.write('\n\rExiting...\n\r');
+        },
+        'go': () => {
+          let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 10;
+          while (num-- > 0 && zpu.getState().pc !== breakpoint) {
             zpu.run_instruction();
           }
           displayRegisters();
-          break;
-        case 'reg':
-          term.write('\n\r');
-          displayRegisters();
-          break;
-        case 'set':
-          term.write('\nEcho: ' + currentCommand.slice(5).trim());
-          break;
-        case 'dump':
-          term.write('\n\r');
-          let start = zpu.getState().pc;
-          let end = zpu.getState().pc+128;
-          if (!isNaN(Number(parseInt(args[0], 16))))
-            start = Number(parseInt(args[0], 16));
-          if (!isNaN(Number(parseInt(args[1], 16))))
-            end = Number(parseInt(args[1], 16));
+        },
+        'pc': () => {
+          let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 10;
+          zpu.getState().pc = num;
+        },
+        'break': () => {
+          let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 0;
+          breakpoint = num;
+        },
+        'reg': () => displayRegisters(),
+        'set': () => term.write('\nEcho: ' + currentCommand.slice(5).trim()),
+        'dump': () => {
+          let start = args.length && !isNaN(parseInt(args[0], 16)) ? parseInt(args[0], 16) : zpu.getState().pc;
+          let end = args.length && !isNaN(parseInt(args[1], 16)) ? parseInt(args[1], 16) : start + 128;
           displayMemorySubset(start, end);
-          break;
-        case 'pc':
-          term.write('\nEcho: ' + currentCommand.slice(5).trim());
-          break;
-        default:
+        },
+        'step': () => {
+          zpu.run_instruction();
+        },
+        's': () => {
+          zpu.run_instruction();
+        },
+        'default': () => {
           term.write(`\ncommand not found: ${command}`);
-          break;
-      }
+        }
+      };
+
+      (commands[cmd] || commands['default'])();
     }
+
+    // Dragging functionality for the window
     const windowElement = document.getElementById('window');
     let isDragging = false;
-    let initialX;
-    let initialY;
+    let initialX, initialY;
 
     windowElement.addEventListener('mousedown', startDragging);
     windowElement.addEventListener('mouseup', stopDragging);
@@ -118,8 +146,8 @@
 
     function startDragging(e) {
       isDragging = true;
-      initialX = e.clientX - windowElement.getBoundingClientRect().left;
-      initialY = e.clientY - windowElement.getBoundingClientRect().top;
+      initialX = e.clientX - windowElement.offsetLeft;
+      initialY = e.clientY - windowElement.offsetTop;
     }
 
     function stopDragging() {
@@ -128,13 +156,10 @@
 
     function drag(e) {
       if (isDragging) {
-        const newX = e.clientX - initialX;
-        const newY = e.clientY - initialY;
-        windowElement.style.left = `${newX}px`;
-        windowElement.style.top = `${newY}px`;
+        windowElement.style.left = `${e.clientX - initialX}px`;
+        windowElement.style.top = `${e.clientY - initialY}px`;
       }
     }
-
   </script>
 </body>
 
