@@ -5,8 +5,7 @@ mem_write(0, 0x10);
 mem_write(1, 0x20);
 
 let fileContent;
-let debug = true;
-
+let debug = false;
 // Start the process of loading the file and logging the content
 const fileUrl = '../mpf-1b.hex';
 logFileContent(fileUrl);
@@ -14,6 +13,8 @@ logFileContent(fileUrl);
 async function logFileContent(fileUrl) {
     await fetchFileAndLog(fileUrl);
     parseIntelHex(fileContent, m_mem_mapping);
+    m_mem_mapping[0x63a]=0;
+    m_mem_mapping[0x63b]=0;
 }
 
 function mem_read(address) {
