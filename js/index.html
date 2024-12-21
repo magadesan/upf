@@ -108,14 +108,13 @@
           displayRegisters();
         },
         'pc': () => {
-          let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 10;
-          term.write('\n\r');
+          let num = (args.length && !isNaN(parseInt(args[0], 16))) ? parseInt(args[0], 16) : zpu.getState().pc;
           let state = zpu.getState();
           state.pc = num;
-          zpu.getState();
+          zpu.setState(state);
         },
         'break': () => {
-          let num = args.length && !isNaN(Number(args[0])) ? Number(args[0]) : 0;
+          let num = (args.length && !isNaN(parseInt(args[0], 16))) ? parseInt(args[0], 16) : 0;
           breakpoint = num;
         },
         'debug': () => {
